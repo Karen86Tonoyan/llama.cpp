@@ -1548,11 +1548,11 @@ common_params_context common_params_parser_init(common_params & params, llama_ex
         {"-fa", "--flash-attn"}, "FA",
         string_format("set Flash Attention use ('on', 'off', or 'auto', default: '%s')", llama_flash_attn_type_name(params.flash_attn_type)),
         [](common_params & params, const std::string & value) {
-            if (value == "on" || value == "enabled") {
+            if (value == "on" || value == "enabled" || value == "1") {
                 params.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_ENABLED;
-            } else if (value == "off" || value == "disabled") {
+            } else if (value == "off" || value == "disabled" || value == "0") {
                 params.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_DISABLED;
-            } else if (value == "auto") {
+            } else if (value == "auto" || value == "-1") {
                 params.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_AUTO;
             } else {
                 throw std::runtime_error(string_format("error: unkown value for --flash-attn: '%s'\n", value.c_str()));
@@ -2466,7 +2466,7 @@ common_params_context common_params_parser_init(common_params & params, llama_ex
     ).set_examples({LLAMA_EXAMPLE_SPECULATIVE, LLAMA_EXAMPLE_SERVER}).set_env("LLAMA_ARG_N_CPU_MOE_DRAFT"));
     add_opt(common_arg(
         {"-ngl", "--gpu-layers", "--n-gpu-layers"}, "N",
-        "number of layers to store in VRAM",
+        string_format("max. number of layers to store in VRAM (default: %d)", params.n_gpu_layers),
         [](common_params & params, int value) {
             params.n_gpu_layers = value;
             if (!llama_supports_gpu_offload()) {
